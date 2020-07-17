@@ -1,85 +1,124 @@
 // Select the desired input file
-input_file = "demo_ecg.csv";
+input_files = ['demo_ecg1.csv', 'demo_ecg2.csv'];
+all_results = [];
+data = [];
+shapes = [];
 
 function parseData(createGraph) {
 
-    Papa.parse(input_file, {
-        download: true,
-        complete: function(results) {
-            console.log("Done");
-            createGraph(results.data)
-        }
-    });
+    for (var k = 0; k < input_files.length; k++) {
+        Papa.parse(input_files[k], {
+            download: true,
+            complete: function(results) {
+                all_results.push(results);
+                if (all_results.length == input_files.length) {
+                    console.log('Done');
+                    createGraph(all_results)
+                }
+            }
+        });
+    }
 }
 
-function createGraph(data) {
+function createGraph(all_results) {
     // Line Plot.. start_at is the start of actual data in the CSV
     start_at = 0;
-    index = [];
-    signal = [];
-
-    for (var i = start_at; i < data.length; i++) {
-
-        fs = 250;
-        index.push(i / fs);
-        signal.push(data[i][0]);
-        
-        var trace = {
-            x: index,
-            y: signal,
-            type: 'scatter',
-            line: {
-                color: 'black',
-                width: 3
-            }
-        };
-    }
-
-    data = [trace];
-
-    shapes = [];
-    grid_delta = 0.04
-    x_lims = Math.max(...data[0].x)/grid_delta
-    y_min = Math.floor(Math.min(...data[0].y)/grid_delta)
-    y_max = Math.max(...data[0].y)/grid_delta
-    for (var i = y_min; i < y_max; i++) {
-        for (var j = 0; j < x_lims; j++) {
-            shapes.push({
-                type:'rect',
-                layer: 'below',
-                x0: 0+(j*grid_delta),
-                y0: 0+(i*grid_delta),
-                x1: grid_delta+(j*grid_delta),
-                y1: grid_delta+(i*grid_delta),
-                line: {
-                    color: 'rgb(255, 212, 212)',
-                    width: 1
-                }
-            })
-        }
-    }
-
+    graphish = [];
     layout = {
-        height: 600,
+        height: 800,
         title: 'Sample ECG Data',
-        xaxis: {
-            title: 'Time (s)',
-            rangeslider: {},
-            dtick: 0.2,
-            gridcolor: 'rgb(255, 60, 60)',
-            gridwidth: 1
-        },
-        yaxis: {
-            title: 'Electric Potential (mV)',
-            fixedrange: true,
-            dtick: 0.2,
-            gridcolor: 'rgb(255, 60, 60)',
-            gridwidth: 1
-        },
-        shapes: shapes
+        grid: {
+            rows: input_files.length,
+            columns: 1,
+            pattern: 'independent'
+        }
     };
 
-    Plotly.newPlot("chart", data, layout); 
+    for (var i = 0; i < all_results.length; i++) {
+
+        index = [];
+        signal = [];
+        temp_data = all_results[i].data;
+        if (i > 0 ) {
+            x_string = 'x'.concat((i+1).toString());
+            y_string = 'y'.concat((i+1).toString());
+            x_axis = 'xaxis'.concat((i+1).toString());
+            y_axis = 'yaxis'.concat((i+1).toString());
+        } else {
+            x_string = 'x';
+            y_string = 'y';
+            x_axis = 'xaxis'
+            y_axis = 'yaxis'
+        }
+
+        for (var j = start_at; j < temp_data.length; j++) {
+
+            fs = 250;
+            index.push(j / fs);
+            signal.push(temp_data[j][0]);
+
+            var trace = {
+                x: index,
+                y: signal,
+                xaxis: x_string,
+                yaxis: y_string,
+                row: i+1,
+                column: 1,
+                type: 'scatter',
+                line: {
+                    color: 'black',
+                    width: 3
+                }
+            };
+        }
+        graphish.push(trace);
+
+        grid_delta = 0.04
+        x_lims = Math.max(...graphish[i].x)/grid_delta
+        y_min = Math.floor(Math.min(...graphish[i].y)/grid_delta)
+        y_max = Math.max(...graphish[i].y)/grid_delta
+        for (var j = y_min; j < y_max; j++) {
+            for (var k = 0; k < x_lims; k++) {
+                shapes.push({
+                    type:'rect',
+                    layer: 'below',
+                    xref: x_string,
+                    yref: y_string,
+                    x0: 0+(k*grid_delta),
+                    y0: 0+(j*grid_delta),
+                    x1: grid_delta+(k*grid_delta),
+                    y1: grid_delta+(j*grid_delta),
+                    line: {
+                        color: 'rgb(255, 212, 212)',
+                        width: 1
+                    }
+                })
+            }
+        }
+
+        layout[x_axis] = {
+            title: 'Time (s)',
+            dtick: 0.2,
+            gridcolor: 'rgb(255, 60, 60)',
+            gridwidth: 1
+        }
+        layout[y_axis] = {
+            title: 'Electric Potential (mV)',
+            //fixedrange: true,
+            dtick: 0.2,
+            gridcolor: 'rgb(255, 60, 60)',
+            gridwidth: 1
+        }
+
+        data.push(graphish);
+
+    }
+
+    console.log(data);
+    console.log(layout);
+    console.log(shapes);
+    layout['shapes'] = shapes;
+    Plotly.newPlot("chart", data[0], layout); 
 
 }
 
