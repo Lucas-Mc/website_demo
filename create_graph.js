@@ -37,6 +37,7 @@ function createGraph(data) {
 
     data = [trace];
     layout = {
+        height: 1000,
         title: 'Sample ECG Data',
         xaxis: {
             rangeslider: {}
