@@ -1,7 +1,8 @@
 /* Insert Documentation Here
  *
  */
-input_files = ["2013_December.csv","2013_November.csv"];
+// input_files = ["2013_December.csv","2013_November.csv"];
+input_file = ["demo_ecg.csv"];
 
 // For single file
 function parseData(createGraph) {
