@@ -7,7 +7,7 @@ input_file = ["demo_ecg.csv"];
 // For single file
 function parseData(createGraph) {
 
-    Papa.parse(input_files[0], {
+    Papa.parse(input_file, {
         download: true,
         complete: function(results) {
             console.log("Done");
@@ -19,18 +19,21 @@ function parseData(createGraph) {
 // For single file
 function createGraph(data) {
     // Line Plot.. start at line 10 (start of actual data in the CSV)
-    start_at = 10;
+    start_at = 0; //10;
     index = [];
-    wind_speed = [];
+    //wind_speed = [];
+    signal = [];
 
     for (var i = start_at; i < data.length; i++) {
         
-        index.push(data[i][1]);
-        wind_speed.push(data[i][7]);
+        //index.push(data[i][1]);
+        index.push(i);
+        //wind_speed.push(data[i][7]);
+        signal.push(data[i][1]);
         
         var trace = {
             x: index,
-            y: wind_speed,
+            y: signal, //wind_speed,
             type: "scatter"
 
         };  
