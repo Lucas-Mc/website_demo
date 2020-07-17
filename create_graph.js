@@ -27,9 +27,10 @@ function createGraph(data) {
     for (var i = start_at; i < data.length; i++) {
         
         //index.push(data[i][1]);
-        index.push(i);
+        fs = 250;
+        index.push(i / 250);
         //wind_speed.push(data[i][7]);
-        signal.push(data[i][1]);
+        signal.push(data[i][0]);
         
         var trace = {
             x: index,
