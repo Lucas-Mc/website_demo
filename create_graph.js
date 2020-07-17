@@ -2,7 +2,7 @@
  *
  */
 // input_files = ["2013_December.csv","2013_November.csv"];
-input_file = ["demo_ecg.csv"];
+input_file = "demo_ecg.csv";
 
 // For single file
 function parseData(createGraph) {
@@ -28,7 +28,7 @@ function createGraph(data) {
         
         //index.push(data[i][1]);
         fs = 250;
-        index.push(i / 250);
+        index.push(i / fs);
         //wind_speed.push(data[i][7]);
         signal.push(data[i][0]);
         
@@ -42,12 +42,14 @@ function createGraph(data) {
 
     data = [trace];
     layout = {
-        height: 400,
+        height: 600,
         title: 'Sample ECG Data',
         xaxis: {
+            title: 'Time (s)',
             rangeslider: {}
         },
         yaxis: {
+            title: 'Electric Potential (mV)',
             fixedrange: true
         }
     };
