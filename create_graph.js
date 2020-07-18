@@ -77,28 +77,42 @@ function createGraph(all_results) {
         graphish.push(trace);
 
         grid_delta = 0.04
-        console.log(graphish[i].y)
-        console.log(Math.min(...graphish[i].y))
-        x_lims = Math.max(...graphish[i].x)/grid_delta
-        y_min = Math.floor(Math.min(...graphish[i].y)/grid_delta)
-        y_max = Math.max(...graphish[i].y)/grid_delta
+        x_max = Math.ceil(Math.max(...graphish[i].x)/grid_delta)
+        y_min = Math.floor(Math.min(...graphish[i].y)/grid_delta)-1
+        y_max = Math.ceil(Math.max(...graphish[i].y)/grid_delta)+1
+
         for (var j = y_min; j < y_max; j++) {
-            for (var k = 0; k < x_lims; k++) {
-                shapes.push({
-                    type:'rect',
-                    layer: 'below',
-                    xref: x_string,
-                    yref: y_string,
-                    x0: 0+(k*grid_delta),
-                    y0: 0+(j*grid_delta),
-                    x1: grid_delta+(k*grid_delta),
-                    y1: grid_delta+(j*grid_delta),
-                    line: {
-                        color: 'rgb(255, 212, 212)',
-                        width: 1
-                    }
-                })
-            }
+            shapes.push({
+                type:'rect',
+                layer: 'below',
+                xref: x_string,
+                yref: y_string,
+                x0: 0,
+                x1: x_max*grid_delta,
+                y0: 0+(j*grid_delta),
+                y1: grid_delta+(j*grid_delta),
+                line: {
+                    color: 'rgb(255, 212, 212)',
+                    width: 1
+                }
+            })
+        }
+
+        for (var j = 0; j < x_max; j++) {
+            shapes.push({
+                type:'rect',
+                layer: 'below',
+                xref: x_string,
+                yref: y_string,
+                x0: 0+(j*grid_delta),
+                x1: grid_delta+(j*grid_delta),
+                y0: y_min*grid_delta,
+                y1: y_max*grid_delta,
+                line: {
+                    color: 'rgb(255, 212, 212)',
+                    width: 1
+                }
+            })
         }
 
         layout[x_axis] = {
