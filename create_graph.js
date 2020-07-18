@@ -71,7 +71,8 @@ function createGraph(all_results) {
                 line: {
                     color: 'black',
                     width: 3
-                }
+                },
+                name: sig_names[i]
             };
         }
         graphish.push(trace);
