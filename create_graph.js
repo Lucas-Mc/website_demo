@@ -24,6 +24,8 @@ function createGraph(all_results) {
     // Line Plot.. start_at is the start of actual data in the CSV
     start_at = 0;
     graphish = [];
+    sig_names = ['II', 'V'];
+    units = ['mV', 'mV'];
     layout = {
         height: 800,
         title: 'Sample ECG Data',
@@ -31,7 +33,8 @@ function createGraph(all_results) {
             rows: input_files.length,
             columns: 1,
             pattern: 'independent'
-        }
+        },
+        showlegend: false
     };
 
     for (var i = 0; i < all_results.length; i++) {
@@ -40,10 +43,10 @@ function createGraph(all_results) {
         signal = [];
         temp_data = all_results[i].data;
         if (i > 0 ) {
-            x_string = 'x'.concat((i+1).toString());
-            y_string = 'y'.concat((i+1).toString());
-            x_axis = 'xaxis'.concat((i+1).toString());
-            y_axis = 'yaxis'.concat((i+1).toString());
+            x_string = 'x' + (i+1).toString();
+            y_string = 'y' + (i+1).toString();
+            x_axis = 'xaxis' + (i+1).toString();
+            y_axis = 'yaxis' + (i+1).toString();
         } else {
             x_string = 'x';
             y_string = 'y';
@@ -74,6 +77,8 @@ function createGraph(all_results) {
         graphish.push(trace);
 
         grid_delta = 0.04
+        console.log(graphish[i].y)
+        console.log(Math.min(...graphish[i].y))
         x_lims = Math.max(...graphish[i].x)/grid_delta
         y_min = Math.floor(Math.min(...graphish[i].y)/grid_delta)
         y_max = Math.max(...graphish[i].y)/grid_delta
@@ -103,8 +108,8 @@ function createGraph(all_results) {
             gridwidth: 1
         }
         layout[y_axis] = {
-            title: 'Electric Potential (mV)',
-            //fixedrange: true,
+            title: sig_names[i] + ' (' + units[i] + ')',
+            fixedrange: true,
             dtick: 0.2,
             gridcolor: 'rgb(255, 60, 60)',
             gridwidth: 1
@@ -114,9 +119,6 @@ function createGraph(all_results) {
 
     }
 
-    console.log(data);
-    console.log(layout);
-    console.log(shapes);
     layout['shapes'] = shapes;
     Plotly.newPlot("chart", data[0], layout); 
 
