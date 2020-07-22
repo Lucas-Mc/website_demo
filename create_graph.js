@@ -3,6 +3,21 @@
 // MIT-LCP
 // 2020
 
+// Determine how to generate the plot
+function initPlot(annotations) {
+    // Select the desired input file
+    if (annotations) {
+        input_files = ['demo_ecg1.csv', 'demo_ann1.csv', 'demo_ecg2.csv'];
+    } else {
+        input_files = ['demo_ecg1.csv', 'demo_ecg2.csv'];
+    }
+    all_results = [];
+    data = [];
+    shapes = [];
+    // Call the data-parser so it can create the graph
+    parseData(createGraph);
+}
+
 function parseData(createGraph) {
     // Read the input CSV files
     for (var k = 0; k < input_files.length; k++) {
@@ -159,21 +174,4 @@ function createGraph(all_results) {
     layout['shapes'] = shapes;
     // Plot the final signal with the desired layout
     Plotly.newPlot("chart", data[0], layout); 
-}
-
-// Determine how to generate the plot
-function initPlot(annotations) {
-    console.log(annotations);
-    // Select the desired input file
-    if (annotations) {
-        input_files = ['demo_ecg1.csv', 'demo_ann1.csv', 'demo_ecg2.csv'];
-    } else {
-        input_files = ['demo_ecg1.csv', 'demo_ecg2.csv'];
-    }
-    console.log(input_files);
-    all_results = [];
-    data = [];
-    shapes = [];
-    // Call the data-parser so it can create the graph
-    parseData(createGraph);
 }
