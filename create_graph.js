@@ -4,12 +4,25 @@
 // 2020
 
 // Determine how to generate the plot
-function initPlot(annotations) {
-    // Select the desired input file
-    if (annotations) {
-        input_files = ['demo_ecg1.csv', 'demo_ann1.csv', 'demo_ecg2.csv'];
-    } else {
-        input_files = ['demo_ecg1.csv', 'demo_ecg2.csv'];
+function initPlot() {
+    records = document.getElementsByClassName('input_file');
+    annotations = document.getElementById('annotations').checked;
+    signal_files = [];
+    input_files = [];
+    for (var i = 0; i < records.length; i++) {
+        if (document.getElementById(records[i].id).checked) {
+            input_files.push('/data/' + records[i].value);
+            signal_files.push('/data/' + records[i].value);
+            end_string = records[i].value.slice(-5)
+            // Select the desired input file
+            if (annotations) {
+                input_files.push('/data/' + records[i].value.split('_')[0] + '_ann' + end_string);
+            }
+        }
+    }
+    // Clear the plots if none are selected
+    if (input_files.length == 0) {
+        document.getElementById('chart').innerHTML = '';
     }
     all_results = [];
     data = [];
@@ -34,21 +47,39 @@ function parseData(createGraph) {
 }
 
 function createGraph(all_results) {
+
+    var n_sigs = all_results.map(
+        function(element) { return element.data[0][0]; }
+    );
+    var n_sigs = n_sigs.reduce(function(p,c) {
+        if (c === "Signal")
+           p++;
+        return p;
+    },0);
     // The starting line number of actual data in the CSV
-    start_at = 1;
-    temp_data = [];
+    const start_at = 1;
+    var temp_data = [];
     // Set some initial conditions
-    grid_delta_minor = 0.04
-    grid_delta_major = 0.2
-    fs = [250, 250, 250];
-    sig_names = ['II', 'V'];
-    units = ['mV', 'mV'];
-    layout = {
+    const grid_delta_minor = 0.04
+    const grid_delta_major = 0.2
+    const fs = {
+        'demo_ecg1': 250,
+        'demo_ecg2': 250
+    }
+    const sig_names = {
+        'demo_ecg1': 'II',
+        'demo_ecg2': 'V'
+    }
+    const units = {
+        'demo_ecg1': 'mV',
+        'demo_ecg2': 'mV'
+    }
+    var layout = {
         // Dynamically determine the HTML figure size
-        height: 250 + all_results.length*250,
+        height: 250 + n_sigs*250,
         title: 'Sample ECG Data',
         grid: {
-            rows: input_files.length,
+            rows: n_sigs,
             columns: 1,
             pattern: 'independent'
         },
@@ -57,7 +88,7 @@ function createGraph(all_results) {
 
     sig_num = 0;
     for (var i = 0; i < all_results.length; i++) {
-        // pre-allocate some variables for later use
+        // Pre-allocate some variables for later use
         index = [];
         signal = [];
         input_data = all_results[i].data;
@@ -71,8 +102,11 @@ function createGraph(all_results) {
             y_axis = 'yaxis' + (sig_num+1).toString();
             // Plot the signal
             for (var j = start_at; j < input_data.length; j++) {
+                // Determine which signal to use
+                record_file = signal_files[sig_num].split('/')[2];
+                record_name = record_file.substring(0, record_file.length-4);
                 // Determine the time and value of the signal
-                index.push(j / fs[sig_num]);
+                index.push(j / fs[record_name]);
                 signal.push(input_data[j][0]);
                 // Create the signal to plot
                 var trace = {
@@ -87,7 +121,7 @@ function createGraph(all_results) {
                         color: 'black',
                         width: 3
                     },
-                    name: sig_names[sig_num]
+                    name: sig_names[record_name]
                 };
             }
             // Append the signal to temp data for analysis
@@ -138,7 +172,7 @@ function createGraph(all_results) {
                 gridwidth: 1
             }
             layout[y_axis] = {
-                title: sig_names[sig_num] + ' (' + units[sig_num] + ')',
+                title: sig_names[record_name] + ' (' + units[record_name] + ')',
                 fixedrange: true,
                 dtick: grid_delta_major,
                 gridcolor: 'rgb(255, 60, 60)',

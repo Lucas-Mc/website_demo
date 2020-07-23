@@ -13,12 +13,39 @@
     <!-- Load the Plotly graphing functions -->
     <script src="create_graph.js"></script>
   </head>
-  <body>
-    <label for="cars">Would you like annotations?</label>
-    <input type="submit" value="Yes" onclick="initPlot(true)">
-    <input type="submit" value="No" onclick="initPlot(false)">
+  <body id="body">
+    <span>Select desired record files:</span>
+    <div id="records"></div>
+    <br>
+    <span>Annotations?</span>
+    <input type="checkbox" id="annotations" onclick="initPlot()">
     <div class="container">
       <div id="chart"></div>
     </div>
   </body>
+  <script>
+    // Get all of the possible input files (will be done by the API)
+    all_files = ['/data/demo_ecg1.csv', '/data/demo_ecg2.csv'];
+
+    for (var i = 0; i < all_files.length; i++) {
+
+      var file_name = all_files[i].split('/')[2].split('.')[0];
+
+      var checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.className = 'input_file'
+      checkbox.id = file_name;
+      checkbox.value = file_name + '.csv';
+      checkbox.setAttribute('onclick', 'initPlot();');
+
+      var label = document.createElement('label')
+      label.htmlFor = file_name;
+      label.appendChild(document.createTextNode(file_name));
+
+      var body = document.getElementById('records');
+      body.appendChild(checkbox);
+      body.appendChild(label);
+
+    }
+  </script>
 </html>
