@@ -104,7 +104,7 @@ function createGraph(all_results) {
             // Plot the signal
             for (var j = start_at; j < input_data.length; j++) {
                 // Determine which signal to use
-                record_file = signal_files[sig_num].split('/')[2];
+                record_file = signal_files[sig_num].split('/')[3];
                 record_name = record_file.substring(0, record_file.length-4);
                 // Determine the time and value of the signal
                 index.push(j / fs[record_name]);
