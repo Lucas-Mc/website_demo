@@ -9,14 +9,15 @@ function initPlot() {
     annotations = document.getElementById('annotations').checked;
     signal_files = [];
     input_files = [];
+    github_filepath = '/website_demo/data/';
     for (var i = 0; i < records.length; i++) {
         if (document.getElementById(records[i].id).checked) {
-            input_files.push('/data/' + records[i].value);
-            signal_files.push('/data/' + records[i].value);
+            input_files.push(github_filepath + records[i].value);
+            signal_files.push(github_filepath + records[i].value);
             end_string = records[i].value.slice(-5)
             // Select the desired input file
             if (annotations) {
-                input_files.push('/data/' + records[i].value.split('_')[0] + '_ann' + end_string);
+                input_files.push(github_filepath + records[i].value.split('_')[0] + '_ann' + end_string);
             }
         }
     }
